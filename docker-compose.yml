@@ -12,7 +12,6 @@ services:
       MARIADB_USER: ${MARIADB_USER}
       MARIADB_PASSWORD: ${MARIADB_PASSWORD}
     volumes:
-      - ./sql:/docker-entrypoint-initdb.d  
       - ./bd_data:/var/lib/mysql           
     ports:
       - "3306:3306"
@@ -32,12 +31,6 @@ services:
       - my_network
     depends_on:
       - mariadb  
-    environment:
-      - SERVEUR_BD=c_mariadb
-      - NOM_BD=${MARIADB_DATABASE}
-      - UTILISATEUR_BD=${MARIADB_USER}
-      - MDP_BD=${MARIADB_PASSWORD}
-
   
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
@@ -69,5 +62,5 @@ services:
     stdin_open: true
 
 networks:
-  my_network:
+  my_network: 
     driver: bridge

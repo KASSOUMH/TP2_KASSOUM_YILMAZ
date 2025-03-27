@@ -1,9 +1,8 @@
 version: '3.8'
 
 services:
-  
   mariadb:
-    image: mariadb
+    image: mariadb:latest
     container_name: c_mariadb
     restart: always
     environment:
@@ -11,27 +10,14 @@ services:
       MARIADB_DATABASE: ${MARIADB_DATABASE}
       MARIADB_USER: ${MARIADB_USER}
       MARIADB_PASSWORD: ${MARIADB_PASSWORD}
-    volumes:
-      - ./bd_data:/var/lib/mysql           
     ports:
       - "3306:3306"
+    volumes:
+      - ./bd_data:/var/lib/mysql
+      - ./sql:/docker-entrypoint-initdb.d
     networks:
       - my_network
 
-  
-  apache:
-    image: php:8.3-apache
-    container_name: c_apache
-    restart: always
-    ports:
-      - "80:80"
-    volumes:
-      - .:/var/www/html  
-    networks:
-      - my_network
-    depends_on:
-      - mariadb  
-  
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     container_name: c_phpmyadmin
@@ -39,28 +25,37 @@ services:
     environment:
       PMA_ARBITRARY: 1
       PMA_HOST: c_mariadb
-      MYSQL_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
     ports:
       - "8080:80"
     networks:
       - my_network
+
+  monapache:
+    build: ./monapache
+    container_name: c_monapache
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - .:/var/www/html
     depends_on:
       - mariadb
+    networks:
+      - my_network
+    environment:
+      SERVEUR_BD: c_mariadb
+      NOM_BD: ${MARIADB_DATABASE}
+      USER_BD: ${MARIADB_USER}
+      MDP_BD: ${MARIADB_PASSWORD}
 
-  
   monubuntu:
-    build:
-      context: .
-      dockerfile: Dockerfile.monubuntu
-    image: monubuntu
+    build: ./monubuntu
     container_name: c_ubuntu
     restart: always
     networks:
       - my_network
-    command: tail -f /dev/null  
-    tty: true
-    stdin_open: true
+    command: tail -f /dev/null
 
 networks:
-  my_network: 
+  my_network:
     driver: bridge

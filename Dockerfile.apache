@@ -5,6 +5,7 @@ RUN apt update && apt install -y git vim telnet \
     && cp "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 
 WORKDIR /var/www
-RUN git clone https://github.com/votre-repo.git html
+#RUN git clone https://github.com/KASSOUMH/TP2_KASSOUM_YILMAZ.git html
+RUN docker-php-ext-install mysqli pdo pdo_mysql
 
 CMD ["apache2-foreground"]

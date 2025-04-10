@@ -1,1 +1,3 @@
-truc
+<?php 
+echo "truc";
+?>
